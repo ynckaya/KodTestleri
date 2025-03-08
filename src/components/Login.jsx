@@ -53,7 +53,7 @@ export default function Login() {
     }
 
     setErrors(newErrors);
-
+    console.log('Errors:', newErrors);
     setIsValid(!newErrors.email && !newErrors.password);
   };
 
@@ -88,6 +88,7 @@ export default function Login() {
           type="email"
           onChange={handleChange}
           value={form.email}
+          invalid={!!errors.email}
         />
         {errors.email && <FormFeedback>{errorMessages.email}</FormFeedback>}
       </FormGroup>
@@ -100,6 +101,7 @@ export default function Login() {
           type="password"
           onChange={handleChange}
           value={form.password}
+          invalid={!!errors.password}
         />
         {errors.password && (
           <FormFeedback>{errorMessages.password}</FormFeedback>
