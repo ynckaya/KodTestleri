@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
-import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import React, { useEffect, useState } from 'react';
+import {
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Button,
+  FormFeedback,
+} from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 
 import axios from 'axios';
@@ -17,6 +24,8 @@ const errorMessages = {
 
 export default function Login() {
   const [form, setForm] = useState(initialForm);
+  const [isValid, setIsValid] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const history = useHistory();
 
@@ -26,8 +35,32 @@ export default function Login() {
     setForm({ ...form, [name]: value });
   };
 
+  useEffect(() => {
+    validateForm();
+  }, [form]);
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (form.email && !emailRegex.test(form.email)) {
+      newErrors.email = errorMessages.email;
+    }
+
+    if (form.password && form.password.length < 4) {
+      newErrors.password = errorMessages.password;
+    }
+
+    setErrors(newErrors);
+
+    setIsValid(!newErrors.email && !newErrors.password);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    if (!isValid) return;
 
     axios
       .get('https://6540a96145bedb25bfc247b4.mockapi.io/api/login')
@@ -56,6 +89,7 @@ export default function Login() {
           onChange={handleChange}
           value={form.email}
         />
+        {errors.email && <FormFeedback>{errorMessages.email}</FormFeedback>}
       </FormGroup>
       <FormGroup>
         <Label for="examplePassword">Password</Label>
@@ -67,6 +101,9 @@ export default function Login() {
           onChange={handleChange}
           value={form.password}
         />
+        {errors.password && (
+          <FormFeedback>{errorMessages.password}</FormFeedback>
+        )}
       </FormGroup>
       <FormGroup check>
         <Input
@@ -81,7 +118,9 @@ export default function Login() {
         </Label>
       </FormGroup>
       <FormGroup className="text-center p-4">
-        <Button color="primary">Sign In</Button>
+        <Button color="primary" disabled={!form.terms}>
+          Sign In
+        </Button>
       </FormGroup>
     </Form>
   );
