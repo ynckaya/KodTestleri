@@ -16,7 +16,7 @@ function App() {
         <Main />
       </Route>
       <Route exact path="/error">
-      <h1>Error Page</h1>
+      <h1>Error Page 2</h1>
       </Route>
     </Switch>
   )
